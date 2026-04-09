@@ -1,0 +1,75 @@
+public class SuperMarketBillingSystem {
+    
+}
+static class Item {
+    int code;
+    String name;
+    double price;
+
+    Item(int code, String name, double price) {
+        this.code = code;
+        this.name = name;
+        this.price = price;
+    }
+}
+
+public static void main(String[] args) {
+    java.util.Map<Integer, Item> catalog = new java.util.HashMap<>();
+    catalog.put(101, new Item(101, "Milk", 45.0));
+    catalog.put(102, new Item(102, "Bread", 30.0));
+    catalog.put(103, new Item(103, "Eggs (dozen)", 70.0));
+    catalog.put(104, new Item(104, "Rice (1 kg)", 80.0));
+    catalog.put(105, new Item(105, "Sugar (1 kg)", 55.0));
+
+    java.util.Scanner scanner = new java.util.Scanner(System.in);
+
+    java.util.List<String> lines = new java.util.ArrayList<>();
+    double subtotal = 0.0;
+
+    System.out.println("Enter item code and quantity. Enter 0 to finish.");
+    while (true) {
+        System.out.print("Item code: ");
+        int code = scanner.nextInt();
+        if (code == 0) {
+            break;
+        }
+        if (!catalog.containsKey(code)) {
+            System.out.println("Unknown item code. Try again.");
+            continue;
+        }
+        System.out.print("Quantity: ");
+        int quantity = scanner.nextInt();
+        if (quantity <= 0) {
+            System.out.println("Quantity must be positive. Try again.");
+            continue;
+        }
+        Item item = catalog.get(code);
+        double lineTotal = item.price * quantity;
+        subtotal += lineTotal;
+        lines.add(String.format("%d  %-15s  %5.2f  %3d  %7.2f",
+                item.code, item.name, item.price, quantity, lineTotal));
+    }
+
+    double gstRate = 0.18;
+    double gstAmount = subtotal * gstRate;
+    double total = subtotal + gstAmount;
+
+    String dateTime = java.time.LocalDateTime.now()
+            .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+
+    System.out.println();
+    System.out.println("===== SuperMarket Bill =====");
+    System.out.println("Date & Time: " + dateTime);
+    System.out.println("-------------------------------------------");
+    System.out.println("Code  Item            Price   Qty   Total");
+    System.out.println("-------------------------------------------");
+    for (String line : lines) {
+        System.out.println(line);
+    }
+    System.out.println("-------------------------------------------");
+    System.out.printf("Subtotal: %.2f%n", subtotal);
+    System.out.printf("GST (18%%): %.2f%n", gstAmount);
+    System.out.printf("Total: %.2f%n", total);
+    System.out.println("-------------------------------------------");
+    scanner.close();
+}
